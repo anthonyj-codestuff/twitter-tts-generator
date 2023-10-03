@@ -1,0 +1,7 @@
+__pycache__/
+.vscode/
+debug_states/
+old_files/
+AudioTTS/*
+tweets/*
+gallery-dl.exe
