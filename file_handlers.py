@@ -1,39 +1,61 @@
 import os
+import re
 import datetime
 import shutil
 import constants as c
 
-def find_file(file_dir, base_name, ext):
+def findFile(file_dir, base_name, ext):
     image_path = os.path.join(file_dir, f"{base_name}{ext}")
     if os.path.exists(image_path):
         return image_path
     return None
 
-def find_image_file(file_dir, base_name):
+def findImageFile(file_dir, base_name):
     image_extensions = ['.jpg', '.jpeg', '.png']
     for ext in image_extensions:
         image_path = os.path.join(file_dir, f"{base_name}{ext}")
         if os.path.exists(image_path):
-            return image_path
+            return [image_path, ext]
     return None
 
-def erase_file_contents(file_path):
+def findVideoFile(file_dir, base_name):
+    image_extensions = [".mp4"]
+    for ext in image_extensions:
+        image_path = os.path.join(file_dir, f"{base_name}{ext}")
+        if os.path.exists(image_path):
+            return [image_path, ext]
+    return None
+
+def eraseFileContents(filepath):
     try:
-        with open(file_path, "w") as file:
+        with open(filepath, "w") as file:
             file.truncate()
     except Exception as e:
-        addLogToFile(f"Error erasing '{file_path}': {str(e)}", c.LOG_FILE)
+        addLogToFile(f"Error erasing '{filepath}': {str(e)}", c.LOG_FILE)
 
-def delete_file(file_path):
-    try:
-        if os.path.exists(file_path):
-            os.remove(file_path)
-    except Exception as e:
-        addLogToFile(f"Error deleting '{file_path}': {str(e)}", c.LOG_FILE)
+def deleteFile(filepath):
+    if c.WRITE_COMMANDS:
+        addCommandToFile(f"IF EXIST {filepath} DEL /F {filepath}")
+    else:
+        try:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+        except Exception as e:
+            addLogToFile(f"Error deleting '{filepath}': {str(e)}", c.LOG_FILE)
 
 def addLogToFile(text, filepath):
     with open(filepath, "a", encoding="utf-8") as file:
         file.write(f"{datetime.datetime.now()}: {text}\n")
+
+def addCommandToFile(text):
+    with open(c.COMMANDS_FILEPATH, "a", encoding="utf-8") as file:
+        file.write(f"{text}\n")
+
+def findParentTweetById(id):
+    for filename in os.listdir(c.TWEETS_DIR):
+        matchesPattern =  re.match(r'^' + str(id) + '-[a-zA-Z0-9_]+_pd_\d{8}.json', filename)
+        if matchesPattern:
+            return filename
 
 def moveFilesToDestination(sourceDir, logFilepath, destinationDir):
     if not os.path.exists(sourceDir):

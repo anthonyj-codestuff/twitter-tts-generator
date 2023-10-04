@@ -1,7 +1,7 @@
 import re
 
 
-def string_has_mostly_caps(line, threshold=0.6):
+def stringHasMostlyCaps(line, threshold=0.6):
     total_chars = len(line)
     caps_count = sum(1 for char in line if char.isupper())
     caps_ratio = caps_count / total_chars
@@ -44,8 +44,8 @@ def sanitize(text):
     if re.match(r"^@[\w\d_]+$", text):
         text = ""
 
-    # Replace URLs with "LINK HERE"
-    text = re.sub(r"https?://\S+", "LINK HERE", text)
+    # Replace URLs with "LINK"
+    text = re.sub(r"https?://\S+", "LINK", text)
 
     text = fix_acronyms(
         text, [
