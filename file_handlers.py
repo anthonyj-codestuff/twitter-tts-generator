@@ -47,6 +47,31 @@ def addLogToFile(text, filepath):
     with open(filepath, "a", encoding="utf-8") as file:
         file.write(f"{datetime.datetime.now()}: {text}\n")
 
+def addTweetToArchive(filename):
+    if not c.USE_ARCHIVE:
+        return
+    with open(c.ARCHIVE_FILEPATH, "a", encoding="utf-8") as file:
+        file.write(f"{filename}\n")
+
+def existsInArchive(target):
+    if not c.USE_ARCHIVE:
+        return False
+    try:
+        with open(c.ARCHIVE_FILEPATH, 'r', encoding="utf-8") as file:
+            for line in file:
+                line = line.rstrip()
+                if line == target:
+                    return True
+        return False
+    except FileNotFoundError:
+        error = f"File '{c.ARCHIVE_FILEPATH}' not found."
+        addLogToFile(error)
+        print(error)
+        return False
+    except Exception as e:
+        addLogToFile(f"An error occurred: {str(e)}")
+        return False
+
 def addCommandToFile(text):
     with open(c.COMMANDS_FILEPATH, "a", encoding="utf-8") as file:
         file.write(f"{text}\n")

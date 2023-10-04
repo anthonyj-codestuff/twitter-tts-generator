@@ -13,6 +13,11 @@ def main():
     tweetsToProcess = funcs.pickTweetsByUser(c.MAIN_ACCOUNT, False)
 
     for tweet in tweetsToProcess:
+        tweetname = os.path.splitext(tweet)[0]
+        if fileUtils.existsInArchive(tweetname):
+            fileUtils.addLogToFile(f"Skipping {tweetname}. Already in archive")
+            continue
+
         # global values determine the structure of the final audio
         childTweet = os.path.join(c.TWEETS_DIR, tweet)
         parentTweet = None # ()
@@ -29,7 +34,7 @@ def main():
             child = vars[0]
             childVoice = vars[1]
             # check for Image
-            childImageVars = fileUtils.findImageFile(c.TWEETS_DIR, os.path.splitext(tweet)[0])
+            childImageVars = fileUtils.findImageFile(c.TWEETS_DIR, tweetname)
             if childImageVars:
                 childImage = childImageVars[0]
                 childImageExt = childImageVars[1]
@@ -54,7 +59,7 @@ def main():
         # at this point, everything has been collected and generated
         if child and not parent:
             # convert child audio to aac and attach image(?)
-            convertedChild = audio.convertAudioFile(child, os.path.splitext(tweet)[0])
+            convertedChild = audio.convertAudioFile(child, tweetname)
             # there might still be a parent image even if there is no parent audio
             eligibleImage = childImage if childImage else parentImage
             if eligibleImage:
@@ -62,8 +67,8 @@ def main():
         elif child and parent:
             # merge child audio to parent, convert to aac, and attach image(?)
             # prefer the child image
-            mergedWav = audio.mergeAudioFilesToWav(parent, child, os.path.splitext(tweet)[0])
-            convertedChild = audio.convertAudioFile(mergedWav, os.path.splitext(tweet)[0])
+            mergedWav = audio.mergeAudioFilesToWav(parent, child, tweetname)
+            convertedChild = audio.convertAudioFile(mergedWav, tweetname)
             eligibleImage = childImage if childImage else parentImage
             if eligibleImage:
                 audio.addImageToFile(convertedChild, eligibleImage)
@@ -86,6 +91,7 @@ def main():
         print(f"parentVoice: {parentVoice}")
         print(f"child: {child}")
         print(f"parent: {parent}")
+        fileUtils.addTweetToArchive(tweetname)
 
 if __name__ == "__main__":
     main()
