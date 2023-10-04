@@ -31,7 +31,7 @@ def eraseFileContents(filepath):
         with open(filepath, "w") as file:
             file.truncate()
     except Exception as e:
-        addLogToFile(f"Error erasing '{filepath}': {str(e)}", c.LOG_FILE)
+        addLogToFile(f"Error erasing '{filepath}': {str(e)}")
 
 def deleteFile(filepath):
     if c.WRITE_COMMANDS:
@@ -41,10 +41,12 @@ def deleteFile(filepath):
             if os.path.exists(filepath):
                 os.remove(filepath)
         except Exception as e:
-            addLogToFile(f"Error deleting '{filepath}': {str(e)}", c.LOG_FILE)
+            addLogToFile(f"Error deleting '{filepath}': {str(e)}")
 
-def addLogToFile(text, filepath):
-    with open(filepath, "a", encoding="utf-8") as file:
+def addLogToFile(text):
+    if not c.USE_LOGS:
+        return
+    with open(c.LOG_FILEPATH, "a", encoding="utf-8") as file:
         file.write(f"{datetime.datetime.now()}: {text}\n")
 
 def addTweetToArchive(filename):

@@ -7,6 +7,7 @@ import file_handlers as fileUtils
 import audio
 
 def main():
+    fileUtils.addLogToFile(f" === === === NEW RUN === === ===")
         # Get all new tweets 
     newtweets.get()
         # Pick out relevant child tweets

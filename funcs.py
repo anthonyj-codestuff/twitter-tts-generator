@@ -9,7 +9,6 @@ import constants as c
 def pickTweetsByUser(twitterName, repliesOnly=False):
   tweets = []
   for filename in os.listdir(c.TWEETS_DIR):
-    print(f"picking file {filename}")
     matchesPattern = re.match(r'^\d{19}-' + twitterName + '_pd_\d{8}.json', filename)
     # bail if name mismatch
     if not matchesPattern:
@@ -29,6 +28,7 @@ def pickTweetsByUser(twitterName, repliesOnly=False):
         print(f"Error decoding JSON in file: {filename}")
       if replyId > 0:
         tweets.append(filename)
+  fileUtils.addLogToFile(f"found {len(tweets)} eligible tweets after update")
   return tweets
 
 def checkTweetForParent(filename):
@@ -54,7 +54,7 @@ def tweetToSanitizedContent(filepath):
     except json.JSONDecodeError:
       log = f"Error decoding JSON in file: {filepath}"
       print(log)
-      fileUtils.addLogToFile(log, c.LOG_FILEPATH)
+      fileUtils.addLogToFile(log)
 
 def tweetFileToAudioPath(directory, file, isChild=True):
   # Check for video and extract audio

@@ -57,12 +57,13 @@ def convertAudioFile(input, output_filename):
 def extractAudioFromVideo(input):
   directory = os.path.dirname(input)
   file = os.path.basename(input)
+  fileUtils.addLogToFile(f"Extracting audio from {file}")
   extractCommand = extract_audio_template.format(input_video=input, output_dir=directory, output_name="video_audio")
   if c.WRITE_COMMANDS:
     fileUtils.addCommandToFile(extractCommand)
     # TODO: should I delete the video file?
     # fileUtils.deleteFile(input)
-    fileUtils.addLogToFile(f"Extracted audio from video {file}", c.LOG_FILEPATH)
+    fileUtils.addLogToFile(f"Extracted audio from video {file}")
     return os.path.join(directory, f"video_audio.wav")
   else:
     # TODO: Run extract script immediately
