@@ -6,7 +6,7 @@ import text_handlers as textUtils
 import file_handlers as fileUtils
 import constants as c
 
-def pickTweetsByUser(twitterName, repliesOnly=False):
+def pickTweetsByUser(twitterName):
   tweets = []
   for filename in os.listdir(c.TWEETS_DIR):
     matchesPattern = re.match(r'^\d{19}-' + twitterName + '_pd_\d{8}.json', filename)
@@ -14,7 +14,7 @@ def pickTweetsByUser(twitterName, repliesOnly=False):
     if not matchesPattern:
       continue
     # if picking all tweets, accept this one
-    if not repliesOnly:
+    if not c.REPLIES_ONLY:
       tweets.append(filename)
       continue
     # open file and check for replyId

@@ -11,7 +11,7 @@ def main():
         # Get all new tweets 
     newtweets.get()
         # Pick out relevant child tweets
-    tweetsToProcess = funcs.pickTweetsByUser(c.MAIN_ACCOUNT, False)
+    tweetsToProcess = funcs.pickTweetsByUser(c.MAIN_ACCOUNT)
 
     for tweet in tweetsToProcess:
         tweetname = os.path.splitext(tweet)[0]
