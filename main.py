@@ -29,7 +29,11 @@ def main():
             child = vars[0]
             childVoice = vars[1]
             # check for Image
-            childImage = fileUtils.findImageFile(c.TWEETS_DIR, os.path.splitext(tweet)[0])
+            childImageVars = fileUtils.findImageFile(c.TWEETS_DIR, os.path.splitext(tweet)[0])
+            if childImageVars:
+                childImage = childImageVars[0]
+                childImageExt = childImageVars[1]
+
         # Check for a parent tweet. If it exists, generate a new file
         parentId = funcs.checkTweetForParent(tweet)
         if parentId and child:
@@ -45,7 +49,7 @@ def main():
                     # While we're here, check for Image
                     parentImageVars = fileUtils.findImageFile(c.TWEETS_DIR, os.path.splitext(parentFilename)[0])
                     if parentImageVars:
-                        parentImage = os.path.join(c.TWEETS_DIR, parentImageVars[0])
+                        parentImage = parentImageVars[0]
                         parentImageExt = parentImageVars[1]
         # at this point, everything has been collected and generated
         if child and not parent:

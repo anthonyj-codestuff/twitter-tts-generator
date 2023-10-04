@@ -57,15 +57,27 @@ def tweetToSanitizedContent(filepath):
       fileUtils.addLogToFile(log, c.LOG_FILEPATH)
 
 def tweetFileToAudioPath(directory, file, isChild=True):
+  # Check for video and extract audio
+  filename = os.path.splitext(file)[0]
+  videoAudioPath = retrieveVideoAudioForTweet(directory, filename)
+
   filepath = os.path.join(directory, file)
   print(f"Parsing file: {file}")
   content = tweetToSanitizedContent(filepath)
   if not content:
+    # there is no text content for this tweet. Check if there is video and return that instead
+    if videoAudioPath:
+      # name the file as though it has the generic voice
+      convertedAudio = audio.convertAudioFile(videoAudioPath, c.VOICE_GENERIC)
+      return [convertedAudio, c.VOICE_GENERIC]
     print(f"empty tweet {file}")
   elif isChild:
     voice = c.VOICE_MAD if textUtils.stringHasMostlyCaps(content) else c.VOICE_NORMAL
     # text is prepped, send it to tortoise
     file = audio.generateAudio(content, voice)
+    if videoAudioPath:
+      # video exists. merge with tweet before returning
+      file = audio.mergeAudioFilesToWav(videoAudioPath, file, voice)
     return [file, voice]
   else:
     twitterHandle = re.search(r'-(\w+)_pd_\d+\.json$', file).group(1)
@@ -73,7 +85,18 @@ def tweetFileToAudioPath(directory, file, isChild=True):
 
     voice = findCustomVoice(twitterHandle)
     file = audio.generateAudio(contentWithIntro, voice)
+    if videoAudioPath:
+      # video exists. merge with tweet before returning
+      file = audio.mergeAudioFilesToWav(videoAudioPath, file, voice)
     return [file, voice]
+  
+def retrieveVideoAudioForTweet(directory, filename):
+  tweetVideoVars = fileUtils.findVideoFile(directory, filename)
+  if not tweetVideoVars:
+    return None
+  videoPath = tweetVideoVars[0]
+  audioPath = audio.extractAudioFromVideo(videoPath)
+  return audioPath
   
 def findCustomVoice(name):
   # retrieve the assigned voice for the given username or use the default

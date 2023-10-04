@@ -15,6 +15,10 @@ convert_wav_file_template = (
   c.FFMPEG_PATH + ' -i "{input_audio}" -c:a aac -b:a 160k "{output_dir}\{output_name}.m4a"'
 )
 
+extract_audio_template = (
+  c.FFMPEG_PATH + ' -i "{input_video}" -vn -acodec pcm_s16le -ac 2 "{output_dir}\{output_name}.wav"'
+)
+
 add_image_template = (
   c.FFMPEG_PATH + ' -i "{input_audio}" -i "{input_image}" -c:a copy -vf "scale=500:500,format=yuv420p" -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" "{output_filepath}"'
 )
@@ -49,6 +53,21 @@ def convertAudioFile(input, output_filename):
   else:
     # TODO: Run convert script immediately
     return
+  
+def extractAudioFromVideo(input):
+  directory = os.path.dirname(input)
+  file = os.path.basename(input)
+  extractCommand = extract_audio_template.format(input_video=input, output_dir=directory, output_name="video_audio")
+  if c.WRITE_COMMANDS:
+    fileUtils.addCommandToFile(extractCommand)
+    # TODO: should I delete the video file?
+    # fileUtils.deleteFile(input)
+    fileUtils.addLogToFile(f"Extracted audio from video {file}", c.LOG_FILEPATH)
+    return os.path.join(directory, f"video_audio.wav")
+  else:
+    # TODO: Run extract script immediately
+    return
+
 
 def mergeAudioFilesToWav(first, second, filename):
   mergeCommand = merge_wav_files_template.format(first_audio=first, second_audio=second, output_name=filename, output_dir=c.TTS_DIR)
@@ -76,5 +95,5 @@ def addImageToFile(audioPath, imagePath):
     fileUtils.addCommandToFile(renameCommand)
     return audioPath
   else:
-    # TODO: Run convert script immediately
+    # TODO: Run metadata script immediately
     return

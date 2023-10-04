@@ -19,11 +19,11 @@ def findImageFile(file_dir, base_name):
     return None
 
 def findVideoFile(file_dir, base_name):
-    image_extensions = [".mp4"]
-    for ext in image_extensions:
-        image_path = os.path.join(file_dir, f"{base_name}{ext}")
-        if os.path.exists(image_path):
-            return [image_path, ext]
+    video_extensions = [".mp4"]
+    for ext in video_extensions:
+        video_path = os.path.join(file_dir, f"{base_name}{ext}")
+        if os.path.exists(video_path):
+            return [video_path, ext]
     return None
 
 def eraseFileContents(filepath):
