@@ -3,6 +3,11 @@ import re
 import datetime
 import shutil
 import constants as c
+import file_handlers as fileUtils
+
+extract_video_frame_template = (
+    c.FFMPEG_PATH + ' -i {video_filepath} -vf "scale=iw*sar:ih,setsar=1" -vframes 1 ' + c.TWEETS_DIR + '\{filename}.png'
+)
 
 def findFile(file_dir, base_name, ext):
     image_path = os.path.join(file_dir, f"{base_name}{ext}")
@@ -25,6 +30,18 @@ def findVideoFile(file_dir, base_name):
         if os.path.exists(video_path):
             return [video_path, ext]
     return None
+
+def extractVideoFrameToAssets(input):
+    file = os.path.basename(input)
+    filename = os.path.splitext(file)[0]
+    
+    extractCommand = extract_video_frame_template.format(video_filepath=input, filename=filename)
+    if c.WRITE_COMMANDS:
+        fileUtils.addCommandToFile(extractCommand)
+        return os.path.join(c.TWEETS_DIR, f"{filename}.png")
+    else:
+        # TODO: Run extract script immediately
+        return
 
 def eraseFileContents(filepath):
     try:

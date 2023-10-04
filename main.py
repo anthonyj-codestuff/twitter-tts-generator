@@ -57,6 +57,21 @@ def main():
                     if parentImageVars:
                         parentImage = parentImageVars[0]
                         parentImageExt = parentImageVars[1]
+
+        # If there are missing images, check for a video and extract a frame
+        if not childImage:
+            videoFileVars = fileUtils.findVideoFile(c.TWEETS_DIR, tweetname)
+            if videoFileVars:
+                extractedImagePath = fileUtils.extractVideoFrameToAssets(videoFileVars[0])
+                childImage = extractedImagePath
+        if parentTweet and not parentImage:
+            file = os.path.basename(parentTweet)
+            filename = os.path.splitext(file)[0]
+            videoFileVars = fileUtils.findVideoFile(c.TWEETS_DIR, filename)
+            if videoFileVars:
+                extractedImagePath = fileUtils.extractVideoFrameToAssets(videoFileVars[0])
+                parentImage = extractedImagePath
+
         # at this point, everything has been collected and generated
         if child and not parent:
             # convert child audio to aac and attach image(?)
@@ -83,7 +98,7 @@ def main():
         # Delete merged.wav
         # Delete parent.png
         # Delete child.png
-        print(f"final state for tweet: {tweet}")
+        print(f"\nfinal state for tweet: {tweet}")
         print(f"childTweet: {childTweet}")
         print(f"parentTweet: {parentTweet}")
         print(f"childImage: {childImage}")
