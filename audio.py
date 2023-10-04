@@ -63,7 +63,6 @@ def extractAudioFromVideo(input):
     fileUtils.addCommandToFile(extractCommand)
     # TODO: should I delete the video file?
     # fileUtils.deleteFile(input)
-    fileUtils.addLogToFile(f"Extracted audio from video {file}")
     return os.path.join(directory, f"video_audio.wav")
   else:
     # TODO: Run extract script immediately

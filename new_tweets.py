@@ -21,6 +21,7 @@ def writeLastRunDate(date):
 
 def get():
     if not c.FETCH_NEW_TWEETS:
+        fileUtils.addLogToFile("Fetching new tweets disabled. Skipping...")
         return
     if c.CUSTOM_FETCH_RANGE:
         p = c.CUSTOM_FETCH_PARAMS

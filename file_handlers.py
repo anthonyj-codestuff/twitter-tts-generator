@@ -4,6 +4,7 @@ import datetime
 import shutil
 import constants as c
 import file_handlers as fileUtils
+import subprocess
 
 extract_video_frame_template = (
     c.FFMPEG_PATH + ' -i {video_filepath} -vf "scale=iw*sar:ih,setsar=1" -vframes 1 ' + c.TWEETS_DIR + '\{filename}.png'
@@ -50,8 +51,8 @@ def eraseFileContents(filepath):
     except Exception as e:
         addLogToFile(f"Error erasing '{filepath}': {str(e)}")
 
-def deleteFile(filepath):
-    if c.WRITE_COMMANDS:
+def deleteFile(filepath, override=False):
+    if c.WRITE_COMMANDS and not override:
         addCommandToFile(f"IF EXIST {filepath} DEL /F {filepath}")
     else:
         try:
@@ -63,7 +64,7 @@ def deleteFile(filepath):
 def addLogToFile(text):
     if not c.USE_LOGS:
         return
-    with open(c.LOG_FILEPATH, "a", encoding="utf-8") as file:
+    with open(c.ERRORLOG_FILEPATH, "a", encoding="utf-8") as file:
         file.write(f"{datetime.datetime.now()}: {text}\n")
 
 def addTweetToArchive(filename):
@@ -122,3 +123,15 @@ def moveFilesToDestination(sourceDir, logFilepath, destinationDir):
                 addLogToFile(f"{err}", logFilepath)
         else:
             addLogToFile(f"WARN: File {filename} already exists", logFilepath)
+
+def echo(input):
+    if c.WRITE_COMMANDS:
+        fileUtils.addCommandToFile(f"echo {input}")
+    else:
+        subprocess.run(f"echo {input}")
+        return
+
+def genlog(input):
+    print(input)
+    with open(c.GENLOG_FILEPATH, "a", encoding="utf-8") as file:
+        file.write(f"{input}\n")

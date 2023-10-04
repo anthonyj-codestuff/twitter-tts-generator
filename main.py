@@ -8,6 +8,7 @@ import audio
 
 def main():
     fileUtils.addLogToFile(f" === === === NEW RUN === === ===")
+    fileUtils.deleteFile(c.GENLOG_FILEPATH, True)
         # Get all new tweets 
     newtweets.get()
         # Pick out relevant child tweets
@@ -15,8 +16,10 @@ def main():
 
     for tweet in tweetsToProcess:
         tweetname = os.path.splitext(tweet)[0]
+        fileUtils.echo(f"=== START {tweetname} ===")
         if fileUtils.existsInArchive(tweetname):
             fileUtils.addLogToFile(f"Skipping {tweetname}. Already in archive")
+            fileUtils.echo(f"=== END {tweetname} ===")
             continue
 
         # global values determine the structure of the final audio
@@ -98,16 +101,17 @@ def main():
         # Delete merged.wav
         # Delete parent.png
         # Delete child.png
-        print(f"\nfinal state for tweet: {tweet}")
-        print(f"childTweet: {childTweet}")
-        print(f"parentTweet: {parentTweet}")
-        print(f"childImage: {childImage}")
-        print(f"parentImage: {parentImage}")
-        print(f"childVoice: {childVoice}")
-        print(f"parentVoice: {parentVoice}")
-        print(f"child: {child}")
-        print(f"parent: {parent}")
+        fileUtils.genlog(f"\nfinal state for tweet: {tweet}")
+        fileUtils.genlog(f"childTweet: {childTweet}")
+        fileUtils.genlog(f"parentTweet: {parentTweet}")
+        fileUtils.genlog(f"childImage: {childImage}")
+        fileUtils.genlog(f"parentImage: {parentImage}")
+        fileUtils.genlog(f"childVoice: {childVoice}")
+        fileUtils.genlog(f"parentVoice: {parentVoice}")
+        fileUtils.genlog(f"child: {child}")
+        fileUtils.genlog(f"parent: {parent}\n")
         fileUtils.addTweetToArchive(tweetname)
+        fileUtils.echo(f"=== END {tweetname} ===")
 
 if __name__ == "__main__":
     main()
