@@ -31,6 +31,42 @@ def pickTweetsByUser(twitterName):
   fileUtils.addLogToFile(f"found {len(tweets)} eligible tweets after update")
   return tweets
 
+def loadCustomTweetList():
+  fileUtils.addLogToFile(f"Loading custom tweet list")
+  try:
+    with open(c.CUSTOM_TWEET_LIST_FILEPATH, "r") as file:
+      lines = file.readlines()
+
+    validFiles = []
+    foundError = False
+
+    for line in lines:
+      # check if it's a string of 16 numerals
+      line = line.strip()
+      if len(line) == 19 and line.isdigit():
+        # Check if a corresponding JSON file already exists
+        pattern = f"{line}-{c.MAIN_ACCOUNT}_pd_" + r"\d{8}\.json"
+        jsonFilenames = [f for f in os.listdir(c.TWEETS_DIR) if re.match(pattern, f)]
+        if any(json_filename for json_filename in jsonFilenames):
+          print(f"found file {jsonFilenames[0]} for id {line}")
+          validFiles.append(jsonFilenames[0])
+        else:
+          fileUtils.addLogToFile(f"ERROR: JSON for tweet {line} does not exist")
+          foundError = True
+      else:
+        fileUtils.addLogToFile(f"ERROR: Invalid line in tweet list: {line}\n")
+        foundError = True
+    if not foundError:
+      return validFiles
+    else:
+      return []
+  except FileNotFoundError:
+    fileUtils.addLogToFile(f"ERROR: Custom tweet file not found\n")
+    return []
+  except Exception as e:
+    fileUtils.addLogToFile(f"ERROR: Error processing custom tweet file: {str(e)}\n")
+    return []
+
 def checkTweetForParent(filename):
   with open(os.path.join(c.TWEETS_DIR, filename), "r", encoding="utf-8") as json_file:
     replyId = 0
@@ -39,7 +75,7 @@ def checkTweetForParent(filename):
       data = json.load(json_file)
       replyId = int(data["reply_id"])
     except json.JSONDecodeError:
-      print(f"Error decoding JSON in file: {filename}")
+      print(f"ERROR: Error decoding JSON in file: {filename}")
     if replyId > 0:
       return replyId
 
@@ -52,7 +88,7 @@ def tweetToSanitizedContent(filepath):
         content = textUtils.sanitize(content)
         return content
     except json.JSONDecodeError:
-      log = f"Error decoding JSON in file: {filepath}"
+      log = f"ERROR: Error decoding JSON in file: {filepath}"
       print(log)
       fileUtils.addLogToFile(log)
 
