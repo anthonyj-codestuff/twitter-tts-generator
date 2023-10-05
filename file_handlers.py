@@ -10,12 +10,6 @@ extract_video_frame_template = (
     c.FFMPEG_PATH + ' -i {video_filepath} -vf "scale=iw*sar:ih,setsar=1" -vframes 1 ' + c.TWEETS_DIR + '\{filename}.png'
 )
 
-def findFile(file_dir, base_name, ext):
-    image_path = os.path.join(file_dir, f"{base_name}{ext}")
-    if os.path.exists(image_path):
-        return image_path
-    return None
-
 def findImageFile(file_dir, base_name):
     image_extensions = ['.jpg', '.jpeg', '.png']
     for ext in image_extensions:
@@ -127,9 +121,9 @@ def moveFilesToDestination(sourceDir, logFilepath, destinationDir):
 def echo(input):
     if c.WRITE_COMMANDS:
         fileUtils.addCommandToFile(f"echo {input}")
+        print(input)
     else:
         subprocess.run(f"echo {input}")
-        return
 
 def genlog(input):
     print(input)
