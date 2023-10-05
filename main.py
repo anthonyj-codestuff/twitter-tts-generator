@@ -95,25 +95,25 @@ def main():
             eligibleImage = childImage if childImage else parentImage
             if eligibleImage:
                 audio.addImageToFile(convertedChild, eligibleImage)
-        
-        # if child and childVoice:
-        #     fileUtils.deleteFile(os.path.join(c.TTS_DIR, f"{childVoice}_0.wav"))
-        # if parent and parentVoice:
-        #     fileUtils.deleteFile(os.path.join(c.TTS_DIR, f"{parentVoice}_0.wav"))
-        # Delete {voice}.wav
-        # Delete generic.wav
-        # Delete merged.wav
-        # Delete parent.png
-        # Delete child.png
-        fileUtils.genlog(f"\nfinal state for tweet: {tweet}")
-        fileUtils.genlog(f"childTweet: {childTweet}")
-        fileUtils.genlog(f"parentTweet: {parentTweet}")
-        fileUtils.genlog(f"childImage: {childImage}")
-        fileUtils.genlog(f"parentImage: {parentImage}")
-        fileUtils.genlog(f"childVoice: {childVoice}")
-        fileUtils.genlog(f"parentVoice: {parentVoice}")
-        fileUtils.genlog(f"child: {child}")
-        fileUtils.genlog(f"parent: {parent}\n")
+
+        # Log current state for tweet and stage assets for deletion
+        fileUtils.genlog(f"final state for tweet: {tweet}")
+        if childTweet:
+            fileUtils.genlog(f"childTweet: {childTweet}")
+        if parentTweet:
+            fileUtils.genlog(f"parentTweet: {parentTweet}")
+        if childImage:
+            fileUtils.genlog(f"childImage: {childImage}")
+        if parentImage:
+            fileUtils.genlog(f"parentImage: {parentImage}")
+        if childVoice:
+            fileUtils.genlog(f"childVoice: {childVoice}")
+        if parentVoice:
+            fileUtils.genlog(f"parentVoice: {parentVoice}")
+        if child:
+            fileUtils.genlog(f"child: {child}")
+        if parent:
+            fileUtils.genlog(f"parent: {parent}\n")
         fileUtils.addTweetToArchive(tweetname)
         fileUtils.echo(f"=== END {tweetname} ===")
 
