@@ -13,6 +13,7 @@ def main():
     newtweets.get()
         # Pick out relevant child tweets
     tweetsToProcess = []
+    filesToDelete = []
     if c.CUSTOM_TWEET_LIST:
         tweetsToProcess = funcs.loadCustomTweetList()
     else:
@@ -23,7 +24,6 @@ def main():
         fileUtils.echo(f"=== START {tweetname} ===")
         if fileUtils.existsInArchive(tweetname):
             fileUtils.addLogToFile(f"Skipping {tweetname}. Already in archive")
-            fileUtils.echo(f"=== END {tweetname} ===")
             continue
 
         # global values determine the structure of the final audio
@@ -71,6 +71,7 @@ def main():
             if videoFileVars:
                 extractedImagePath = fileUtils.extractVideoFrameToAssets(videoFileVars[0])
                 childImage = extractedImagePath
+                filesToDelete.append(extractedImagePath)
         if parentTweet and not parentImage:
             file = os.path.basename(parentTweet)
             filename = os.path.splitext(file)[0]
@@ -78,6 +79,7 @@ def main():
             if videoFileVars:
                 extractedImagePath = fileUtils.extractVideoFrameToAssets(videoFileVars[0])
                 parentImage = extractedImagePath
+                filesToDelete.append(extractedImagePath)
 
         # at this point, everything has been collected and generated
         if child and not parent:
@@ -100,12 +102,16 @@ def main():
         fileUtils.genlog(f"final state for tweet: {tweet}")
         if childTweet:
             fileUtils.genlog(f"childTweet: {childTweet}")
+            filesToDelete.append(childTweet)
         if parentTweet:
             fileUtils.genlog(f"parentTweet: {parentTweet}")
+            filesToDelete.append(parentTweet)
         if childImage:
             fileUtils.genlog(f"childImage: {childImage}")
+            filesToDelete.append(childImage)
         if parentImage:
             fileUtils.genlog(f"parentImage: {parentImage}")
+            filesToDelete.append(parentImage)
         if childVoice:
             fileUtils.genlog(f"childVoice: {childVoice}")
         if parentVoice:
@@ -115,7 +121,10 @@ def main():
         if parent:
             fileUtils.genlog(f"parent: {parent}\n")
         fileUtils.addTweetToArchive(tweetname)
-        fileUtils.echo(f"=== END {tweetname} ===")
+
+    if c.DELETE_ASSETS:
+        fileUtils.deleteAssets(filesToDelete)
+    print("done")
 
 if __name__ == "__main__":
     main()

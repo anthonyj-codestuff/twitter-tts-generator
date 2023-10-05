@@ -129,3 +129,11 @@ def genlog(input):
     print(input)
     with open(c.GENLOG_FILEPATH, "a", encoding="utf-8") as file:
         file.write(f"{input}\n")
+
+def deleteAssets(fileList):
+    dedupedFiles = []
+    for i in fileList:
+        if i not in dedupedFiles:
+            dedupedFiles.append(i)
+    for file in dedupedFiles:
+        fileUtils.deleteFile(file, False)
