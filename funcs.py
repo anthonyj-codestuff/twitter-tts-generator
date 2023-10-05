@@ -113,7 +113,7 @@ def tweetFileToAudioPath(directory, file, isChild=True):
     file = audio.generateAudio(content, voice)
     if videoAudioPath:
       # video exists. merge with tweet before returning
-      file = audio.mergeAudioFilesToWav(videoAudioPath, file, voice)
+      file = audio.mergeAudioFilesToWav(file, videoAudioPath, voice)
     return [file, voice]
   else:
     twitterHandle = re.search(r'-(\w+)_pd_\d+\.json$', file).group(1)
@@ -123,7 +123,7 @@ def tweetFileToAudioPath(directory, file, isChild=True):
     file = audio.generateAudio(contentWithIntro, voice)
     if videoAudioPath:
       # video exists. merge with tweet before returning
-      file = audio.mergeAudioFilesToWav(videoAudioPath, file, voice)
+      file = audio.mergeAudioFilesToWav(file, videoAudioPath, voice)
     return [file, voice]
   
 def retrieveVideoAudioForTweet(directory, filename):
