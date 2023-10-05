@@ -47,7 +47,7 @@ def eraseFileContents(filepath):
 
 def deleteFile(filepath, override=False):
     if c.WRITE_COMMANDS and not override:
-        addCommandToFile(f"IF EXIST {filepath} DEL /F {filepath}")
+        addCommandToFile(f"IF EXIST \"{filepath}\" DEL /F \"{filepath}\"")
     else:
         try:
             if os.path.exists(filepath):
