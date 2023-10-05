@@ -60,10 +60,10 @@ def main():
                     parent = parentVars[0]
                     parentVoice = parentVars[1]
                     # While we're here, check for Image
-                    parentImageVars = fileUtils.findImageFile(c.TWEETS_DIR, os.path.splitext(parentFilename)[0])
-                    if parentImageVars:
-                        parentImage = parentImageVars[0]
-                        parentImageExt = parentImageVars[1]
+                parentImageVars = fileUtils.findImageFile(c.TWEETS_DIR, os.path.splitext(parentFilename)[0])
+                if parentImageVars:
+                    parentImage = parentImageVars[0]
+                    parentImageExt = parentImageVars[1]
 
         # If there are missing images, check for a video and extract a frame
         if not childImage:
