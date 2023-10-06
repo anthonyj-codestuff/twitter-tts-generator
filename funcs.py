@@ -85,6 +85,7 @@ def tweetToSanitizedContent(filepath):
       data = json.load(json_file)
       if "content" in data and len(data["content"]) > 0:
         content = data["content"]
+        fileUtils.genlog(f"Tweet before sanitizing: {content}")
         content = textUtils.sanitize(content)
         return content
     except json.JSONDecodeError:
@@ -106,6 +107,7 @@ def tweetFileToAudioPath(directory, file, isChild=True):
       # name the file as though it has the generic voice
       convertedAudio = audio.convertAudioFile(videoAudioPath, c.VOICE_GENERIC)
       return [convertedAudio, c.VOICE_GENERIC]
+    fileUtils.genlog(f"Tweet after sanitizing:  {content}")
     print(f"empty tweet {file}")
   elif isChild:
     voice = c.VOICE_MAD if textUtils.stringHasMostlyCaps(content) else c.VOICE_NORMAL
@@ -114,16 +116,19 @@ def tweetFileToAudioPath(directory, file, isChild=True):
     if videoAudioPath:
       # video exists. merge with tweet before returning
       file = audio.mergeAudioFilesToWav(file, videoAudioPath, voice)
+    fileUtils.genlog(f"Tweet after sanitizing:  {content}")
     return [file, voice]
   else:
     twitterHandle = re.search(r'-(\w+)_pd_\d+\.json$', file).group(1)
-    contentWithIntro = f"from {twitterHandle}. {content}"
+    sanitizedHandle = textUtils.sanitize(twitterHandle)
+    contentWithIntro = f"from {sanitizedHandle}, {content}"
 
     voice = findCustomVoice(twitterHandle)
     file = audio.generateAudio(contentWithIntro, voice)
     if videoAudioPath:
       # video exists. merge with tweet before returning
       file = audio.mergeAudioFilesToWav(file, videoAudioPath, voice)
+    fileUtils.genlog(f"Tweet after sanitizing:  {contentWithIntro}")
     return [file, voice]
   
 def retrieveVideoAudioForTweet(directory, filename):
