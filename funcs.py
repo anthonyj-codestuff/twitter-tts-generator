@@ -52,7 +52,21 @@ def loadCustomTweetList():
         jsonFilenames = [f for f in os.listdir(c.TWEETS_DIR) if re.match(pattern, f)]
         if any(json_filename for json_filename in jsonFilenames):
           print(f"found file {jsonFilenames[0]} for id {line}")
-          validFiles.append(jsonFilenames[0])
+          if not c.REPLIES_ONLY:
+            validFiles.append(jsonFilenames[0])
+            continue
+          # open file and check for replyId
+          with open(os.path.join(c.TWEETS_DIR, jsonFilenames[0]), "r", encoding="utf-8") as json_file:
+            replyId = 0
+            try:
+              data = json.load(json_file)
+              replyId = int(data["reply_id"])
+            except json.JSONDecodeError:
+              print(f"Error decoding JSON in file: {jsonFilenames[0]}")
+            if replyId > 0:
+              validFiles.append(jsonFilenames[0])
+
+
         else:
           fileUtils.addLogToFile(f"ERROR: JSON for tweet {line} does not exist")
           foundError = True
