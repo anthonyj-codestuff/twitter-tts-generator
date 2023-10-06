@@ -41,9 +41,12 @@ def loadCustomTweetList():
     foundError = False
 
     for line in lines:
-      # check if it's a string of 16 numerals
+      # check if it's a string of 17-20 numerals
       line = line.strip()
-      if len(line) == 19 and line.isdigit():
+      # just skip it if it's a whitespace-only line
+      if not line:
+        continue
+      if len(line) >= 17 and len(line) <= 20 and line.isdigit():
         # Check if a corresponding JSON file already exists
         pattern = f"{line}-{c.MAIN_ACCOUNT}_pd_" + r"\d{8}\.json"
         jsonFilenames = [f for f in os.listdir(c.TWEETS_DIR) if re.match(pattern, f)]
