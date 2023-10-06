@@ -19,9 +19,14 @@ extract_audio_template = (
   c.FFMPEG_PATH + ' -i "{input_video}" -vn -acodec pcm_s16le -ac 2 "{output_dir}\{output_name}.wav"'
 )
 
-add_image_template = (
-  c.FFMPEG_PATH + ' -i "{input_audio}" -i "{input_image}" -c:a copy -vf "scale=500:500,format=yuv420p" -id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v comment="Cover (front)" "{output_filepath}"'
+add_image_ffmpeg_template = (
+  c.FFMPEG_PATH + ' -i "{input_audio}" -i "{input_image}" -map 0:a:0 -map 1:v:0 -filter:v "scale=w=500:h=500,format=yuvj420p" -c:a copy -c:v mjpeg -disposition:v:0 attached_pic -f ipod -movflags +faststart "{output_filepath}"'
 )
+
+add_image_atomicparsley_template = (
+  c.ATOMICPARSLEY_PATH + ' "{input_audio}" --artwork "{input_image}" -W -o "{output_filepath}"'
+)
+
 rename_file_template = (
   'REN "{input_filepath}" "{output_file}"'
 )
@@ -86,8 +91,12 @@ def addImageToFile(audioPath, imagePath):
   filename = os.path.splitext(file)[0]
   fileDotExt = os.path.splitext(file)[1]
   image_audio_filepath = os.path.join(directory, f"{filename}-image{fileDotExt}")
+  imageCommand = ""
 
-  imageCommand = add_image_template.format(input_audio=audioPath, input_image=imagePath, output_filepath=image_audio_filepath)
+  if c.USE_ATOMICPARSLEY:
+    imageCommand = add_image_atomicparsley_template.format(input_audio=audioPath, input_image=imagePath, output_filepath=image_audio_filepath)
+  else:
+    imageCommand = add_image_ffmpeg_template.format(input_audio=audioPath, input_image=imagePath, output_filepath=image_audio_filepath)
   renameCommand = rename_file_template.format(input_filepath=image_audio_filepath, output_file=file)
   if c.WRITE_COMMANDS:
     fileUtils.addCommandToFile(imageCommand)
