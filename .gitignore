@@ -3,11 +3,11 @@ __pycache__/
 debug_states/
 old_files/
 AudioTTS/*
-tweets/*
+tweets*/*
 gallery-dl.exe
 notes.txt
 logs.txt
 last-run-logs.txt
-commands.bat
+commands*.bat
 archive.txt
 custom-tweet-list.txt
