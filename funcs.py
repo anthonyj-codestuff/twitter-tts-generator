@@ -102,7 +102,8 @@ def tweetToSanitizedContent(filepath):
       data = json.load(json_file)
       if "content" in data and len(data["content"]) > 0:
         content = data["content"]
-        fileUtils.genlog(f"Tweet before sanitizing: {content}")
+        contentOneline = content.replace("\r", "").replace("\n", "")
+        fileUtils.genlog(f"Tweet before sanitizing: {contentOneline}")
         content = textUtils.sanitize(content)
         return content
     except json.JSONDecodeError:
