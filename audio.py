@@ -15,8 +15,13 @@ convert_wav_file_template = (
   c.FFMPEG_PATH + ' -i "{input_audio}" -c:a aac -b:a 160k "{output_dir}\{output_name}.m4a"'
 )
 
+# This is a bit weird. Use ffprobe to check if the audio. If it exists, extract it. If it doesn't, generate a second of silence
 extract_audio_template = (
-  c.FFMPEG_PATH + ' -i "{input_video}" -vn -acodec pcm_s16le -ac 2 "{output_dir}\{output_name}.wav"'
+  c.FFPROBE_PATH + ' -i "{input_video}" -show_entries stream=codec_type -loglevel error > "' + os.path.join(c.TWEETS_DIR, "temp.txt") + '"\n' +
+  'findstr /c:"audio" "' + os.path.join(c.TWEETS_DIR, "temp.txt") + '" > nul\n' +
+  'if %errorlevel% equ 0 (' + c.FFMPEG_PATH + ' -i {input_video} -vn -acodec pcm_s16le -ac 2 -y "{output_dir}\{output_name}.wav") else (' + c.FFMPEG_PATH + ' -f lavfi -t 1 -i anullsrc=r=44100:cl=stereo -acodec pcm_s16le -ac 2 -y "{output_dir}\{output_name}.wav")\n' +
+  ':: gap command to stop delete from failing\n' +
+  'IF EXIST "' + os.path.join(c.TWEETS_DIR, "temp.txt") + '" DEL "' + os.path.join(c.TWEETS_DIR, "temp.txt") + '"'
 )
 
 add_image_ffmpeg_template = (
