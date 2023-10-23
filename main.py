@@ -9,9 +9,9 @@ import audio
 def main():
     fileUtils.addLogToFile(f" === === === NEW RUN === === ===")
     fileUtils.deleteFile(c.GENLOG_FILEPATH, True)
-        # Get all new tweets 
-    newtweets.get()
-        # Pick out relevant child tweets
+    # Get all new tweets 
+    newtweets.get() 
+    # Pick out relevant child tweets
     tweetsToProcess = []
     filesToDelete = []
     if c.CUSTOM_TWEET_LIST:
@@ -21,10 +21,10 @@ def main():
 
     for tweet in tweetsToProcess:
         tweetname = os.path.splitext(tweet)[0]
-        fileUtils.echo(f"=== START {tweetname} ===")
         if fileUtils.existsInArchive(tweetname):
-            fileUtils.addLogToFile(f"Skipping {tweetname}. Already in archive")
+            fileUtils.addLogToFile(f"Skipping {tweetname}. Already in archive") # TODO Add this file to the delete list. Write a function to delete this and any media/parents
             continue
+        fileUtils.echo(f"=== START {tweetname} ===")
 
         # global values determine the structure of the final audio
         childTweet = os.path.join(c.TWEETS_DIR, tweet)

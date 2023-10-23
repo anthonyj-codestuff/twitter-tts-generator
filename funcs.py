@@ -9,7 +9,7 @@ import constants as c
 def pickTweetsByUser(twitterName):
   tweets = []
   for filename in os.listdir(c.TWEETS_DIR):
-    matchesPattern = re.match(r'^\d{19}-' + twitterName + '_pd_\d{8}.json', filename)
+    matchesPattern = re.match(r'^\d{17,20}-' + twitterName + '_pd_\d{8}.json', filename)
     # bail if name mismatch
     if not matchesPattern:
       continue
@@ -45,7 +45,7 @@ def loadCustomTweetList():
         pattern = f"{line}-{c.MAIN_ACCOUNT}_pd_" + r"\d{8}\.json"
         jsonFilenames = [f for f in os.listdir(c.TWEETS_DIR) if re.match(pattern, f)]
         if any(json_filename for json_filename in jsonFilenames):
-          print(f"found file {jsonFilenames[0]} for id {line}")
+          # print(f"found file {jsonFilenames[0]} for id {line}")
           if not c.REPLIES_ONLY:
             validFiles.append(jsonFilenames[0])
             continue
