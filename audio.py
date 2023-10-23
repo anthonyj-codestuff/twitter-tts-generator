@@ -36,13 +36,65 @@ rename_file_template = (
   'REN "{input_filepath}" "{output_file}"'
 )
 
+def getSubstringsByLength(input, maxLength=c.MAX_TWEET_LENGTH):
+    words = input.split()
+    result = []
+    currentChunk = ""
+
+    for word in words:
+        if len(currentChunk) + len(word) + 1 <= maxLength:
+            if currentChunk:
+                currentChunk += " " + word
+            else:
+                currentChunk = word
+        else:
+            result.append(currentChunk)
+            currentChunk = word
+
+    if currentChunk:
+        result.append(currentChunk)
+
+    return result
+
 def generateAudio(content, voice):
-  audioCommand = generate_voice_template.format(data=content, voice=voice)
   if c.WRITE_COMMANDS:
-    fileUtils.addCommandToFile(audioCommand)
-    return os.path.join(c.TTS_DIR, f"{voice}_0.wav")
+    if len(content) > c.MAX_TWEET_LENGTH:
+      # content needs to be split up into multiple files
+      fileUtils.addLogToFile(f"WARNING: Contents are too long to be generated ({len(content)} characters)")
+      substrings = getSubstringsByLength(content)
+      # 1: Generate initial substring
+      initialAudioGenCommand = generate_voice_template.format(data=substrings[0], voice=voice)
+      fileUtils.addCommandToFile(initialAudioGenCommand)
+      # 2: Rename generated file to allow concatenating new audio
+      audioPath = os.path.join(c.TTS_DIR, f"{voice}_0.wav")
+      renameCommand = rename_file_template.format(input_filepath=audioPath, output_file=f"{voice}_lump.wav")
+      fileUtils.addCommandToFile(renameCommand)
+      for string in substrings[1:]:
+        # 3: generate next substring audio
+        audioGenCommand = generate_voice_template.format(data=string, voice=voice)
+        fileUtils.addCommandToFile(audioGenCommand)
+        # 4: append new audio to lump file
+        first = os.path.join(c.TTS_DIR, f"{voice}_lump.wav")
+        second = os.path.join(c.TTS_DIR, f"{voice}_0.wav")
+        mergeAudioFilesToWav(first, second, f"{voice}_new")
+        # 5: rename new file to allow further concatenation
+        new = os.path.join(c.TTS_DIR, f"{voice}_new.wav")
+        renameCommand = rename_file_template.format(input_filepath=new, output_file=f"{voice}_lump.wav")
+        fileUtils.addCommandToFile(renameCommand)
+      # 6: Now that concatenation is done, rename the lump file to the finished filename
+      lump = os.path.join(c.TTS_DIR, f"{voice}_lump.wav")
+      renameCommand = rename_file_template.format(input_filepath=lump, output_file=f"{voice}_0.wav")
+      fileUtils.addCommandToFile(renameCommand)
+      # 7: return merged file
+      return os.path.join(c.TTS_DIR, f"{voice}_0.wav")
+    else:
+      # proceed as normal
+      audioCommand = generate_voice_template.format(data=content, voice=voice)
+      fileUtils.addCommandToFile(audioCommand)
+      return os.path.join(c.TTS_DIR, f"{voice}_0.wav")
   else:
     return
+    audioCommand = generate_voice_template.format(data=content, voice=voice)
     ***REMOVED***
     ***REMOVED***
     try:
