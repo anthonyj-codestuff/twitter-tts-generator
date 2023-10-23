@@ -18,17 +18,11 @@ def pickTweetsByUser(twitterName):
       tweets.append(filename)
       continue
     # open file and check for replyId
-    with open(os.path.join(c.TWEETS_DIR, filename), "r", encoding="utf-8") as json_file:
-      replyId = 0
-      try:
-        print(f"loading {os.path.join(c.TWEETS_DIR, filename)}")
-        data = json.load(json_file)
-        replyId = int(data["reply_id"])
-      except json.JSONDecodeError:
-        print(f"Error decoding JSON in file: {filename}")
-      if replyId > 0:
-        tweets.append(filename)
-  fileUtils.addLogToFile(f"found {len(tweets)} eligible tweets after update")
+    data = fileUtils.loadJSONData(os.path.join(c.TWEETS_DIR, filename))
+    replyId = int(data["reply_id"])
+    if replyId and replyId > 0:
+      tweets.append(filename)
+  fileUtils.addLogToFile(f"found {len(tweets)} eligible tweets")
   return tweets
 
 def loadCustomTweetList():

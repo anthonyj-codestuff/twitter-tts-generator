@@ -5,10 +5,31 @@ import shutil
 import constants as c
 import file_handlers as fileUtils
 import subprocess
+import json
 
 extract_video_frame_template = (
     c.FFMPEG_PATH + ' -i {video_filepath} -vf "scale=iw*sar:ih,setsar=1" -vframes 1 ' + c.TWEETS_DIR + '\{filename}.png'
 )
+
+def loadJSONData(filepath, keys=None):
+    data = {}
+    try:
+        with open(filepath, 'r', encoding="utf-8") as json_file:
+            rawData = json.load(json_file)
+
+            if keys is not None:
+                for key in keys:
+                    if key in rawData:
+                        data[key] = rawData[key]
+            else:
+                data = rawData
+            return data
+    except FileNotFoundError:
+        print(f"File not found: {filepath}")
+        return None
+    except json.JSONDecodeError as e:
+        print(f"JSON decoding error: {e}")
+        return None
 
 def findImageFile(file_dir, base_name):
     image_extensions = ['.jpg', '.jpeg', '.png']
@@ -126,7 +147,6 @@ def echo(input):
         subprocess.run(f"echo {input}")
 
 def genlog(input):
-    print(input)
     with open(c.GENLOG_FILEPATH, "a", encoding="utf-8") as file:
         file.write(f"{input}\n")
 
