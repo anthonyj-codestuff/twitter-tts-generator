@@ -116,9 +116,13 @@ def tweetFileToAudioPath(directory, file, isChild=True):
   if not content:
     # there is no text content for this tweet. Check if there is video and return that instead
     if videoAudioPath:
-      # name the file as though it has the generic voice
-      convertedAudio = audio.convertAudioFile(videoAudioPath, c.VOICE_GENERIC)
-      return [convertedAudio, c.VOICE_GENERIC]
+      # in the case that there is ONLY video for a given tweet, this will assign a voice to it so that files can be named correctly
+      # if the child and the parent are both from the same account, they will have different voices, but it's fine because TTS is not done
+      voiceForVideoOnly = c.VOICE_NORMAL if isChild else c.VOICE_GENERIC
+      convertedAudio = audio.convertAudioFile(videoAudioPath, voiceForVideoOnly)
+      # if a file does not go through TTS, it is not moved to the TTS folder. Do that before returning the file
+      movedFile = fileUtils.moveFileToDestination(convertedAudio, c.TTS_DIR)
+      return [movedFile, voiceForVideoOnly]
     fileUtils.genlog(f"Tweet after sanitizing:  {content}")
     print(f"empty tweet {file}")
   elif isChild:
