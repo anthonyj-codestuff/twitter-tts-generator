@@ -8,7 +8,10 @@ import subprocess
 import json
 
 extract_video_frame_template = (
-    c.FFMPEG_PATH + ' -i {video_filepath} -vf "scale=iw*sar:ih,setsar=1" -vframes 1 ' + c.TWEETS_DIR + '\{filename}.png'
+)
+
+move_file_template = (
+    'MOVE /Y "{file}" "{destination_dir}"'
 )
 
 def loadJSONData(filepath, keys=None):
@@ -120,27 +123,31 @@ def findParentTweetById(id):
         if matchesPattern:
             return filename
 
-def moveFilesToDestination(sourceDir, logFilepath, destinationDir):
-    if not os.path.exists(sourceDir):
-        print(f"Source directory '{sourceDir}' does not exist.")
+def moveFileToDestination(sourceFile, destinationDir):
+    filename = os.path.basename(sourceFile)
+    if not os.path.isfile(sourceFile) and not c.WRITE_COMMANDS:
+        # this is a bit risky if writing commands
+        addLogToFile(f"Error moving file to destination: Source file '{sourceFile}' does not exist.", True)
         return
     if not os.path.exists(destinationDir):
-        print(f"Destination directory '{destinationDir}' does not exist.")
+        print(f"Error moving file to destination: Destination directory '{destinationDir}' does not exist.", True)
+        return
+    if os.path.isfile(os.path.join(destinationDir, filename)):
+        print(f"Error moving file to destination: File '{filename}' already exists at {destinationDir}.", True)
         return
 
-    for filename in os.listdir(sourceDir):
-        sourceFilePath = os.path.join(sourceDir, filename)
-        if not os.path.exists(sourceFilePath):
-            destinationFilePath = os.path.join(destinationDir, filename)
-            print(f"Moving {filename}")
-            try:
-                shutil.copy(sourceFilePath, destinationFilePath)
-            except FileExistsError as err:
-                addLogToFile(f"{err}", logFilepath)
-            except FileNotFoundError as err:
-                addLogToFile(f"{err}", logFilepath)
-        else:
-            addLogToFile(f"WARN: File {filename} already exists", logFilepath)
+    if c.WRITE_COMMANDS:
+        moveCommand = move_file_template.format(file=sourceFile, destination_dir=destinationDir)
+        addCommandToFile(moveCommand)
+        return os.path.join(destinationDir, filename)
+    else:
+        print(f"Moving {filename}")
+        try:
+            shutil.move(sourceFile, destinationDir)
+        except FileExistsError as err:
+            addLogToFile(f"{err}")
+        except FileNotFoundError as err:
+            addLogToFile(f"{err}")
 
 def echo(input):
     if c.WRITE_COMMANDS:
