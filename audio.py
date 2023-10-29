@@ -116,7 +116,7 @@ def convertAudioFile(input, output_filename):
     # TODO: Run convert script immediately
     return
   
-def extractAudioFromVideo(input):
+def extractAudioFromVideo(input): # extract audio into same directory as video
   directory = os.path.dirname(input)
   file = os.path.basename(input)
   fileUtils.addLogToFile(f"Extracting audio from {file}")

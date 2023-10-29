@@ -67,6 +67,7 @@ def eraseFileContents(filepath):
         addLogToFile(f"Error erasing '{filepath}': {str(e)}")
 
 def deleteFile(filepath, override=False):
+    # If override is true, this will on-demand delete a file even if WRITE_COMMANDS is set
     if c.WRITE_COMMANDS and not override:
         addCommandToFile(f"IF EXIST \"{filepath}\" DEL /F \"{filepath}\"")
     else:
@@ -76,7 +77,9 @@ def deleteFile(filepath, override=False):
         except Exception as e:
             addLogToFile(f"Error deleting '{filepath}': {str(e)}")
 
-def addLogToFile(text):
+def addLogToFile(text, printLog=False):
+    if printLog:
+        print(text)
     if not c.USE_LOGS:
         return
     with open(c.ERRORLOG_FILEPATH, "a", encoding="utf-8") as file:
