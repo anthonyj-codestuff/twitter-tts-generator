@@ -2,7 +2,8 @@ __pycache__/
 .vscode/
 debug_states/
 old_files/
-AudioTTS/*
+notes/
+AudioTTS/
 tweets*/*
 gallery-dl.exe
 notes.txt
@@ -11,3 +12,4 @@ last-run-logs.txt
 commands*.bat
 archive.txt
 custom-tweet-list.txt
+activate-conda.bat
