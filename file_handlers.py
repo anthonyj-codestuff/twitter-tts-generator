@@ -8,6 +8,7 @@ import subprocess
 import json
 
 extract_video_frame_template = (
+    c.FFMPEG_PATH + ' -i {video_filepath} -vf "scale=iw*sar:ih,setsar=1" -vframes 1 -y ' + c.TWEETS_DIR + '\{filename}.png'
 )
 
 move_file_template = (
