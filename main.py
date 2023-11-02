@@ -121,7 +121,7 @@ def main():
         if parent:
             fileUtils.genlog(f"parent: {parent}\n")
         fileUtils.addTweetToArchive(tweetname)
-        if c.MOVE_TO_DESTINATION:
+        if c.MOVE_TO_DESTINATION and child:
             # TODO There's GOT to be a better way to get the resulting filename
             audioFile = os.path.join(c.TTS_DIR, f"{tweetname}.m4a")
             fileUtils.moveFileToDestination(audioFile, c.PODCAST_DIR)
