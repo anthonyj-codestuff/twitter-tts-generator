@@ -22,7 +22,9 @@ def main():
     for tweet in tweetsToProcess:
         tweetname = os.path.splitext(tweet)[0]
         if fileUtils.existsInArchive(tweetname):
-            fileUtils.addLogToFile(f"Skipping {tweetname}. Already in archive") # TODO Add this file to the delete list. Write a function to delete this and any media/parents
+            fileUtils.addLogToFile(f"Skipping {tweetname}. Already in archive")
+            tweetFileList = fileUtils.getListOfFilesForTweet(tweet)
+            filesToDelete.extend(tweetFileList)
             continue
         fileUtils.echo(f"=== START {tweetname} ===")
 
@@ -127,7 +129,8 @@ def main():
             fileUtils.moveFileToDestination(audioFile, c.PODCAST_DIR)
 
     if c.DELETE_ASSETS:
-        fileUtils.deleteAssets(filesToDelete)
+        dedupedFiles = set(filesToDelete)
+        fileUtils.deleteAssets(dedupedFiles)
     print("done")
 
 if __name__ == "__main__":

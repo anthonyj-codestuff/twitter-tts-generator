@@ -35,7 +35,7 @@ def loadJSONData(filepath, keys=None):
         print(f"JSON decoding error: {e}")
         return None
 
-def findImageFile(file_dir, base_name):
+def findImageFile(file_dir, base_name): # Expecting: "ID-USERNAME_pd_DATE" for base_name
     image_extensions = ['.jpg', '.jpeg', '.png']
     for ext in image_extensions:
         image_path = os.path.join(file_dir, f"{base_name}{ext}")
@@ -43,7 +43,7 @@ def findImageFile(file_dir, base_name):
             return [image_path, ext]
     return None
 
-def findVideoFile(file_dir, base_name):
+def findVideoFile(file_dir, base_name): # Expecting: "ID-USERNAME_pd_DATE" for base_name
     video_extensions = [".mp4"]
     for ext in video_extensions:
         video_path = os.path.join(file_dir, f"{base_name}{ext}")
@@ -119,10 +119,56 @@ def addCommandToFile(text):
         file.write(f"{text}\n")
 
 def findParentTweetById(id):
+    #TODO this name does not accurately describe the behavior of this function
     for filename in os.listdir(c.TWEETS_DIR):
         matchesPattern =  re.match(r'^' + str(id) + '-[a-zA-Z0-9_]+_pd_\d{8}.json', filename)
         if matchesPattern:
             return filename
+
+def getListOfFilesForTweet(tweetFile): # Expecting: "ID-USERNAME_pd_DATE.json"
+    fileList = []
+    childTweet = None
+    childImage = None
+    childVideo = None
+    parentTweet = None
+    parentImage = None
+    parentVideo = None
+
+    childTweet = os.path.join(c.TWEETS_DIR, tweetFile)
+    childName = os.path.splitext(tweetFile)[0]
+    childImageData = findImageFile(c.TWEETS_DIR, childName)
+    if childImageData:
+        childImage = childImageData[0]
+    childVideoData = findVideoFile(c.TWEETS_DIR, childName)
+    if childVideoData:
+        childVideo = childVideoData[0]
+
+    parentData = loadJSONData(os.path.join(c.TWEETS_DIR, tweetFile), ["reply_id"])
+    parentFilename = findParentTweetById(parentData["reply_id"]) if parentData["reply_id"] else None
+    if parentFilename:
+        parentName = os.path.splitext(parentFilename)[0]
+        parentImageData = findImageFile(c.TWEETS_DIR, parentName)
+        if parentImageData:
+            parentImage = parentImageData[0]
+        parentVideoData = findVideoFile(c.TWEETS_DIR, parentName)
+        if parentVideoData:
+            parentVideo = parentVideoData[0]
+        parentTweet = os.path.join(c.TWEETS_DIR, parentFilename)
+        
+
+    if childTweet:
+        fileList.append(childTweet)
+    if childImage:
+        fileList.append(childImage)
+    if childVideo:
+        fileList.append(childVideo)
+    if parentTweet:
+        fileList.append(parentTweet)
+    if parentImage:
+        fileList.append(parentImage)
+    if parentVideo:
+        fileList.append(parentVideo)
+    return fileList
 
 def moveFileToDestination(sourceFile, destinationDir):
     filename = os.path.basename(sourceFile)
