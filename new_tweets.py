@@ -24,6 +24,7 @@ def get():
     def fetchParentTweets():
         children = funcs.pickTweetsByUser(c.MAIN_ACCOUNT)
         parents = []
+        fileUtils.addLogToFile(f"Checking {len(children)} children for missing parents. This might take a while...", True)
         for child in children:
             file = os.path.join(c.TWEETS_DIR, child)
             data = fileUtils.loadJSONData(file, ["reply_id", "reply_to"])
@@ -39,6 +40,7 @@ def get():
                     data["reply_to"],
                     data["reply_id"]
                 ])
+        fileUtils.addLogToFile(f"Found {len(parents)} missing parents", True)
         for p in parents:
             log = f"Fetching missing parent [{p}]"
             print(log)
