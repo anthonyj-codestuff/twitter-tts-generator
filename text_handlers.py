@@ -7,8 +7,8 @@ def stringHasMostlyCaps(line, threshold=0.6):
     caps_ratio = caps_count / total_chars
     return caps_ratio > threshold
 
-
-def sanitize(text):
+# discardSingleAt: Normally, a string is discarded if it is only an @handle
+def sanitize(text, discardSingleAt=True):
     def replace_multiple_letters(match):
         return match.group(0)[:3]
 
@@ -30,6 +30,13 @@ def sanitize(text):
         replaced_text = re.sub(pattern, replace, text, flags=re.IGNORECASE)
         return replaced_text
 
+    def trimTwitterHandleNums(string):
+        # regex pattern to find twitter handles and strip trailing numbers
+        cleaned_string = re.sub(r'@[\w\d]+', lambda x: x.group().rstrip('0123456789'), string)
+        return cleaned_string
+
+    text = trimTwitterHandleNums(text)
+
     # Remove smart quotes
     smart_quotes = {
         "\u2018": "",
@@ -41,7 +48,7 @@ def sanitize(text):
         text = text.replace(smart, "")
 
     # Check if the string is just a single @
-    if re.match(r"^@[\w\d_]+$", text):
+    if re.match(r"^@[\w\d_]+$", text) and discardSingleAt:
         text = ""
 
     # Replace URLs with "LINK"
