@@ -16,7 +16,7 @@ def sanitize(text, discardSingleAt=True):
         pattern = rf'\b(?:{"|".join(map(re.escape, target_strings))})\b'
 
         def replace(match):
-            return ".".join(match.group()) + "."
+            return ".".join(match.group())
 
         replaced_text = re.sub(pattern, replace, text)
         return replaced_text
@@ -25,7 +25,7 @@ def sanitize(text, discardSingleAt=True):
         pattern = rf'\b(?:{"|".join(map(re.escape, target_strings))})\b'
 
         def replace(match):
-            return ".".join(match.group()) + "."
+            return ".".join(match.group())
 
         replaced_text = re.sub(pattern, replace, text, flags=re.IGNORECASE)
         return replaced_text
@@ -62,7 +62,8 @@ def sanitize(text, discardSingleAt=True):
     text = fix_acronyms_ignorecase(
         text,
         [
-            "AFK", "BRB", "ADHD", "VFX", "AMA", "FYI",
+            "AFK", "BRB", "ADHD", "VFX", "AMA", "FYI", "POV", "SSD", "CPU", "AMD", "GPU", "MTG",
+            "MPH", "CGI", "FBI", "RPG", "NYC", "CG", "PSA", "USB", "OBS", "HDMI", "DSLR", "LGBT",
         ],
     )
 
