@@ -136,7 +136,7 @@ def tweetFileToAudioPath(directory, file, isChild=True):
     return [file, voice]
   else:
     twitterHandle = re.search(r'-(\w+)_pd_\d+\.json$', file).group(1)
-    sanitizedHandle = textUtils.sanitize(twitterHandle)
+    sanitizedHandle = textUtils.sanitize(f"@{twitterHandle}", False)
     contentWithIntro = f"from {sanitizedHandle}, {content}"
 
     voice = findCustomVoice(twitterHandle)
