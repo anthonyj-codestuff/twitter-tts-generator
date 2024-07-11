@@ -105,6 +105,11 @@ def tweetToSanitizedContent(filepath):
       print(log)
       fileUtils.addLogToFile(log)
 
+# This should do a bunch of things. It should result in an audio file that contains:
+# TODO the quoted tweet (and any audio it might contain)
+# DONE main tweet body, regardless of length
+# DONE Any audio contained in the attached media
+# TODO An OCR of the image attached
 def tweetFileToAudioPath(directory, file, isChild=True):
   # Check for video and extract audio
   filename = os.path.splitext(file)[0]
