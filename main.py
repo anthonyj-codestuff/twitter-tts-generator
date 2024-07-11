@@ -28,6 +28,7 @@ def main():
             continue
         fileUtils.echo(f"=== START {tweetname} ===")
 
+        # TODO parent should really be treated as its own thing and prepended to the child
         # global values determine the structure of the final audio
         childTweet = os.path.join(c.TWEETS_DIR, tweet)
         parentTweet = None # ()
@@ -52,7 +53,7 @@ def main():
         # Check for a parent tweet. If it exists, generate a new file
         parentId = funcs.checkTweetForParent(tweet)
         if parentId and child:
-            parentFilename = fileUtils.findParentTweetById(parentId)
+            parentFilename = fileUtils.findTweetJSONById(parentId)
             if parentFilename:
                 parentTweet = os.path.join(c.TWEETS_DIR, parentFilename)
                 # save the name of the parent
@@ -66,6 +67,22 @@ def main():
                 if parentImageVars:
                     parentImage = parentImageVars[0]
                     parentImageExt = parentImageVars[1]
+
+        # I don't think a tweet can be a quote and a reply. If there's not already a parent, try a quote
+        if not parent:
+            quotedId = funcs.checkTweetForQuoted(tweet)
+            if quotedId and child:
+                quotedFilename = fileUtils.findTweetJSONById(quotedId)
+                if quotedFilename:
+                    parentTweet = os.path.join(c.TWEETS_DIR, quotedFilename)
+                    quotedVars = funcs.tweetFileToAudioPath(c.TWEETS_DIR, quotedFilename, False)
+                    if quotedVars:
+                        parent = quotedVars[0]
+                        parentVoice = quotedVars[1]
+                    quotedImageVars = fileUtils.findImageFile(c.TWEETS_DIR, os.path.splitext(quotedFilename)[0])
+                    if quotedImageVars:
+                        parentImage = quotedImageVars[0]
+                        parentImageExt = quotedImageVars[1]
 
         # If there are missing images, check for a video and extract a frame
         if not childImage:

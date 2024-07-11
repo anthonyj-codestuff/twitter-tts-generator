@@ -78,17 +78,30 @@ def loadCustomTweetList():
     fileUtils.addLogToFile(f"ERROR: Error processing custom tweet file: {str(e)}\n")
     return []
 
-def checkTweetForParent(filename):
-  with open(os.path.join(c.TWEETS_DIR, filename), "r", encoding="utf-8") as json_file:
-    replyId = 0
+def loadJSONData(filepath):
+  with open(filepath, "r", encoding="utf-8") as json_file:
     try:
-      print(f"loading {os.path.join(c.TWEETS_DIR, filename)}")
-      data = json.load(json_file)
-      replyId = int(data["reply_id"])
+      print(f"loading {filepath}")
+      return json.load(json_file)
     except json.JSONDecodeError:
-      print(f"ERROR: Error decoding JSON in file: {filename}")
-    if replyId > 0:
-      return replyId
+      print(f"ERROR: Error decoding JSON in file: {filepath}")
+
+def checkTweetForParent(filename):
+  replyId = 0
+  data = loadJSONData(os.path.join(c.TWEETS_DIR, filename))
+  replyId = int(data["reply_id"])
+  if replyId > 0:
+    return replyId
+
+def checkTweetForQuoted(filename):
+  data = loadJSONData(os.path.join(c.TWEETS_DIR, filename))
+  originalId = data["tweet_id"]
+  for file in os.listdir(c.TWEETS_DIR):
+    if file.endswith(".json"):
+      data = loadJSONData(os.path.join(c.TWEETS_DIR, file))
+      quoteId = data["quote_id"]
+      if quoteId == originalId:
+        return data["tweet_id"]
 
 def tweetToSanitizedContent(filepath):
   with open(filepath, "r", encoding="utf-8") as json_file:

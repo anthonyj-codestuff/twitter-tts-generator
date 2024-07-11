@@ -31,7 +31,7 @@ def get():
             if not data["reply_id"] or not data["reply_to"]:
                 continue
             # parent exists, check if file is already downloaded
-            parentFilename = fileUtils.findParentTweetById(data["reply_id"])
+            parentFilename = fileUtils.findTweetJSONById(data["reply_id"])
             if parentFilename:
                 # parent file already exists
                 continue

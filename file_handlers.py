@@ -118,8 +118,7 @@ def addCommandToFile(text):
     with open(c.COMMANDS_FILEPATH, "a", encoding="utf-8") as file:
         file.write(f"{text}\n")
 
-def findParentTweetById(id):
-    #TODO this name does not accurately describe the behavior of this function
+def findTweetJSONById(id):
     for filename in os.listdir(c.TWEETS_DIR):
         matchesPattern =  re.match(r'^' + str(id) + '-[a-zA-Z0-9_]+_pd_\d{8}.json', filename)
         if matchesPattern:
@@ -144,7 +143,7 @@ def getListOfFilesForTweet(tweetFile): # Expecting: "ID-USERNAME_pd_DATE.json"
         childVideo = childVideoData[0]
 
     parentData = loadJSONData(os.path.join(c.TWEETS_DIR, tweetFile), ["reply_id"])
-    parentFilename = findParentTweetById(parentData["reply_id"]) if parentData["reply_id"] else None
+    parentFilename = findTweetJSONById(parentData["reply_id"]) if parentData["reply_id"] else None
     if parentFilename:
         parentName = os.path.splitext(parentFilename)[0]
         parentImageData = findImageFile(c.TWEETS_DIR, parentName)
