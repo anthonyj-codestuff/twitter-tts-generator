@@ -96,7 +96,7 @@ def addTweetToArchive(filename):
         file.write(f"{filename}\n")
 
 def existsInArchive(target):
-    if not c.USE_ARCHIVE:
+    if not c.USE_ARCHIVE or c.CUSTOM_TWEET_LIST:
         return False
     try:
         with open(c.ARCHIVE_FILEPATH, 'r', encoding="utf-8") as file:
