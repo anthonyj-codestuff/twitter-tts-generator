@@ -33,6 +33,11 @@ MOVE_TO_DESTINATION = True
 # Use AtomicParsley to attach images to audio. Seems to produce better results, but ffmpeg also works
 USE_ATOMICPARSLEY = True
 
+class TweetModes():
+  CHILD = 1
+  PARENT = 2
+  QUOTE = 3
+
 # turtle-tts voice names
 VOICE_NORMAL = "voice for normal child tweets"
 VOICE_MAD = "voice for ALL CAPS child tweets"

@@ -123,7 +123,7 @@ def tweetToSanitizedContent(filepath):
 # DONE main tweet body, regardless of length
 # DONE Any audio contained in the attached media
 # TODO An OCR of the image attached
-def tweetFileToAudioPath(directory, file, isChild=True):
+def tweetFileToAudioPath(directory, file, mode=c.TweetModes.CHILD):
   # Check for video and extract audio
   filename = os.path.splitext(file)[0]
   videoAudioPath = retrieveVideoAudioForTweet(directory, filename)
@@ -136,14 +136,14 @@ def tweetFileToAudioPath(directory, file, isChild=True):
     if videoAudioPath:
       # in the case that there is ONLY video for a given tweet, this will assign a voice to it so that files can be named correctly
       # if the child and the parent are both from the same account, they will have different voices, but it's fine because TTS is not done
-      voiceForVideoOnly = c.VOICE_NORMAL if isChild else c.VOICE_GENERIC
+      voiceForVideoOnly = c.VOICE_NORMAL if mode == c.TweetModes.CHILD else c.VOICE_GENERIC
       convertedAudio = audio.convertAudioFile(videoAudioPath, voiceForVideoOnly)
       # if a file does not go through TTS, it is not moved to the TTS folder. Do that before returning the file
       movedFile = fileUtils.moveFileToDestination(convertedAudio, c.TTS_DIR)
       return [movedFile, voiceForVideoOnly]
     fileUtils.genlog(f"Tweet after sanitizing:  {content}")
     print(f"empty tweet {file}")
-  elif isChild:
+  elif mode == c.TweetModes.CHILD:
     voice = c.VOICE_MAD if textUtils.stringHasMostlyCaps(content) else c.VOICE_NORMAL
     # text is prepped, send it to tortoise
     file = audio.generateAudio(content, voice)
@@ -155,7 +155,10 @@ def tweetFileToAudioPath(directory, file, isChild=True):
   else:
     twitterHandle = re.search(r'-(\w+)_pd_\d+\.json$', file).group(1)
     sanitizedHandle = textUtils.sanitize(f"@{twitterHandle}", False)
-    contentWithIntro = f"from {sanitizedHandle}, {content}"
+    if mode == c.TweetModes.QUOTE:
+      contentWithIntro = f"quoted from {sanitizedHandle}, {content}"
+    else:
+      contentWithIntro = f"from {sanitizedHandle}, {content}"
 
     voice = findCustomVoice(twitterHandle)
     file = audio.generateAudio(contentWithIntro, voice)

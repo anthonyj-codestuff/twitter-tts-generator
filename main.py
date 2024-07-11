@@ -40,7 +40,7 @@ def main():
         parent = None # (path to audio)
 
         # Generate a child wav, it will return normal or mad, save the filepath and voice for later
-        vars = funcs.tweetFileToAudioPath(c.TWEETS_DIR, tweet, True)
+        vars = funcs.tweetFileToAudioPath(c.TWEETS_DIR, tweet, c.TweetModes.CHILD)
         if vars:
             child = vars[0]
             childVoice = vars[1]
@@ -58,7 +58,7 @@ def main():
                 parentTweet = os.path.join(c.TWEETS_DIR, parentFilename)
                 # save the name of the parent
                 # get the content for the tweet
-                parentVars = funcs.tweetFileToAudioPath(c.TWEETS_DIR, parentFilename, False)
+                parentVars = funcs.tweetFileToAudioPath(c.TWEETS_DIR, parentFilename, c.TweetModes.PARENT)
                 if parentVars:
                     parent = parentVars[0]
                     parentVoice = parentVars[1]
@@ -75,7 +75,7 @@ def main():
                 quotedFilename = fileUtils.findTweetJSONById(quotedId)
                 if quotedFilename:
                     parentTweet = os.path.join(c.TWEETS_DIR, quotedFilename)
-                    quotedVars = funcs.tweetFileToAudioPath(c.TWEETS_DIR, quotedFilename, False)
+                    quotedVars = funcs.tweetFileToAudioPath(c.TWEETS_DIR, quotedFilename, c.TweetModes.QUOTE)
                     if quotedVars:
                         parent = quotedVars[0]
                         parentVoice = quotedVars[1]
