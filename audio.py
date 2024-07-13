@@ -93,17 +93,8 @@ def generateAudio(content, voice):
       fileUtils.addCommandToFile(audioCommand)
       return os.path.join(c.TTS_DIR, f"{voice}_0.wav")
   else:
+    # TODO figure out how to execute commands as they're generated
     return
-    audioCommand = generate_voice_template.format(data=content, voice=voice)
-    ***REMOVED***
-    ***REMOVED***
-    try:
-      ***REMOVED***
-    except subprocess.CalledProcessError as a:
-      print(a)
-    ***REMOVED***
-    ***REMOVED***
-    ***REMOVED***
 
 def convertAudioFile(input, output_filename):
   directory = os.path.dirname(input)
