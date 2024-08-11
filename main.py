@@ -148,6 +148,8 @@ def main():
     if c.DELETE_ASSETS:
         dedupedFiles = set(filesToDelete)
         fileUtils.deleteAssets(dedupedFiles)
+        # add a line to the batch file that blanks the file after it's run
+        fileUtils.addCommandToFile(f"copy NUL {c.COMMANDS_FILEPATH} >NUL")
     print("done")
 
 if __name__ == "__main__":
